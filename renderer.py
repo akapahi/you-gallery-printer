@@ -76,14 +76,33 @@ def render_section(img, draw, y, section, section_data):
     return max(y, title_end_y) + 40
 
 
+def calculate_vertical_title_height(title, char_size, char_spacing, space_advance):
+    """Calculate the height that vertical title will occupy."""
+    words = title.split()
+    total_height = 0
+
+    for word_idx, word in enumerate(words):
+        for char in word:
+            total_height += char_size + char_spacing
+        if word_idx < len(words) - 1:
+            total_height += space_advance
+
+    return total_height
+
+
 def render_empty_section(img, draw, y, section):
     """Render a placeholder section (no data) with zizia image, centered."""
     font      = ImageFont.truetype(FONT_PATH, 28)
-    title_x   = PRINTER_WIDTH - 40
+    title_x   = PRINTER_WIDTH - 90
     content_x = 30
+    char_size = 70
+    char_spacing = -2
+    space_advance = 15
 
-    # Calculate content height first
-    temp_y = y
+    # Calculate vertical title height
+    title_height = calculate_vertical_title_height(section["title"], char_size, char_spacing, space_advance)
+
+    # Calculate zizia and text heights
     zizia_height = 0
     try:
         zizia = Image.open("zizia.png").convert("RGB")
@@ -97,7 +116,9 @@ def render_empty_section(img, draw, y, section):
     bbox = draw.textbbox((0, 0), "NO DATA FOUND", font=no_data_font)
     text_height = (bbox[3] - bbox[1]) + 20
 
-    section_height = 300
+    # Section height is based on longest of title or content
+    content_height = zizia_height + text_height
+    section_height = max(title_height, content_height) + 40
     total_content_height = zizia_height + text_height
     top_padding = (section_height - total_content_height) // 2
 
@@ -105,7 +126,7 @@ def render_empty_section(img, draw, y, section):
 
     title_end_y = draw_vertical_title(
         img, section["title"], y, font, title_x,
-        char_size=70, char_spacing=-2, space_advance=15,
+        char_size=char_size, char_spacing=char_spacing, space_advance=space_advance,
     )
 
     try:
