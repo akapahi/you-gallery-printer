@@ -77,29 +77,54 @@ def render_section(img, draw, y, section, section_data):
 
 
 def render_empty_section(img, draw, y, section):
-    """Render a placeholder section (no data) with zizia image."""
+    """Render a placeholder section (no data) with zizia image, centered."""
     font      = ImageFont.truetype(FONT_PATH, 28)
-    title_x   = PRINTER_WIDTH - 55
+    title_x   = PRINTER_WIDTH - 40
     content_x = 30
+
+    # Calculate content height first
+    temp_y = y
+    zizia_height = 0
+    try:
+        zizia = Image.open("zizia.png").convert("RGB")
+        max_w = 220
+        zizia = zizia.resize((max_w, int(zizia.height * (max_w / zizia.width))))
+        zizia_height = zizia.height + 20
+    except Exception as e:
+        logger.error(f"Failed to load zizia.png: {e}")
+
+    no_data_font = ImageFont.truetype(FONT_PATH, 30)
+    bbox = draw.textbbox((0, 0), "NO DATA FOUND", font=no_data_font)
+    text_height = (bbox[3] - bbox[1]) + 20
+
+    section_height = 300
+    total_content_height = zizia_height + text_height
+    top_padding = (section_height - total_content_height) // 2
+
+    y = y + top_padding
 
     title_end_y = draw_vertical_title(
         img, section["title"], y, font, title_x,
-        char_size=70, char_spacing=-2, space_advance=0,
+        char_size=70, char_spacing=-2, space_advance=15,
     )
 
     try:
         zizia = Image.open("zizia.png").convert("RGB")
         max_w = 220
         zizia = zizia.resize((max_w, int(zizia.height * (max_w / zizia.width))))
-        img.paste(zizia, (content_x, y))
+        zizia_x = (PRINTER_WIDTH - max_w) // 2
+        img.paste(zizia, (zizia_x, y))
         y += zizia.height + 20
     except Exception as e:
         logger.error(f"Failed to load zizia.png: {e}")
 
     no_data_font = ImageFont.truetype(FONT_PATH, 30)
-    y = draw_text(draw, "NO DATA FOUND", y, no_data_font, x_override=content_x)
+    bbox = draw.textbbox((0, 0), "NO DATA FOUND", font=no_data_font)
+    text_width = bbox[2] - bbox[0]
+    text_x = (PRINTER_WIDTH - text_width) // 2
+    y = draw_text(draw, "NO DATA FOUND", y, no_data_font, x_override=text_x)
 
-    return max(y, title_end_y) + 40
+    return y + 40
 
 
 def render_header_section(data):
