@@ -76,15 +76,20 @@ def draw_wrapped_text(draw, text, x, y, max_width):
 
 
 def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spacing, space_advance):
-    """Stamp each character rotated 270°, stacked top-to-bottom on the right side."""
+    """Stamp each character rotated 270°, stacked top-to-bottom on the right side.
+    Letters within a word are close together, words are separated by space_advance."""
     current_y = start_y
-    for char in title:
-        if char == " ":
+    words = title.split()
+
+    for word_idx, word in enumerate(words):
+        for char in word:
+            char_img = Image.new("RGBA", (char_size, char_size), (255, 255, 255, 0))
+            ImageDraw.Draw(char_img).text((0, 0), char, font=font, fill=TEXT_COLOR)
+            rotated = char_img.rotate(270, expand=True)
+            img.paste(rotated, (title_x, current_y), rotated)
+            current_y += rotated.height + char_spacing
+
+        if word_idx < len(words) - 1:
             current_y += space_advance
-            continue
-        char_img = Image.new("RGBA", (char_size, char_size), (255, 255, 255, 0))
-        ImageDraw.Draw(char_img).text((0, 0), char, font=font, fill=TEXT_COLOR)
-        rotated = char_img.rotate(270, expand=True)
-        img.paste(rotated, (title_x, current_y), rotated)
-        current_y += rotated.height + char_spacing
+
     return current_y
