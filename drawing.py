@@ -82,8 +82,8 @@ def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spac
     current_y = start_y
     words = title.split()
 
-    # fixed advance per character
-    char_advance = char_size + char_spacing
+    char_advance = char_size + char_spacing - 28
+    word_gap = space_advance + 20
 
     for word_idx, word in enumerate(words):
         for char in word:
@@ -101,10 +101,9 @@ def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spac
 
             img.paste(rotated, (title_x, current_y), rotated)
 
-            # use fixed spacing instead of rotated.height
             current_y += char_advance
 
         if word_idx < len(words) - 1:
-            current_y += space_advance
+            current_y += word_gap
 
     return current_y
