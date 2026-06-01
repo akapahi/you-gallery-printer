@@ -81,11 +81,12 @@ def calculate_vertical_title_height(title, char_size, char_spacing, space_advanc
     words = title.split()
     total_height = 0
 
+    char_advance = char_size + char_spacing - 28
     for word_idx, word in enumerate(words):
         for char in word:
-            total_height += char_size + char_spacing
+            total_height += char_advance
         if word_idx < len(words) - 1:
-            total_height += space_advance
+            total_height += space_advance + 20
 
     return total_height
 
