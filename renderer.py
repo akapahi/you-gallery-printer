@@ -84,7 +84,7 @@ def render_empty_section(img, draw, y, section):
 
     title_end_y = draw_vertical_title(
         img, section["title"], y, font, title_x,
-        char_size=80, char_spacing=-6, space_advance=0,
+        char_size=70, char_spacing=-2, space_advance=0,
     )
 
     try:
@@ -155,15 +155,15 @@ def combine_images_vertical(images):
     return combined
 
 
-def save_preview_images(images, base_name="section"):
-    """Save preview images for each section."""
+def save_preview_images(images, section_names):
+    """Save preview images for each section with named files."""
     previews_dir = Path("previews")
     previews_dir.mkdir(exist_ok=True)
 
     preview_paths = []
-    for idx, img in enumerate(images):
+    for img, name in zip(images, section_names):
         bw_img = img.convert("L").convert("1")
-        path = previews_dir / f"{base_name}_{idx:02d}.png"
+        path = previews_dir / f"section_{name}.png"
         bw_img.save(path)
         preview_paths.append(path)
         logger.info(f"Saved preview: {path}")
@@ -179,11 +179,13 @@ def print_visitor_ticket(printer_device, data):
     try:
         app_data = data.get("appData", {})
         images = []
+        section_names = []
 
         # Render header
         logger.info("Rendering header section...")
         header_img = render_header_section(data)
         images.append(header_img)
+        section_names.append("header")
 
         # Render sections in ORDER
         ordered = [s for sid in ORDER for s in APP_SECTIONS if s["stationId"] == sid]
@@ -192,9 +194,10 @@ def print_visitor_ticket(printer_device, data):
             section_data = app_data.get(section["stationId"])
             section_img = render_station_section(section, section_data)
             images.append(section_img)
+            section_names.append(section["stationId"])
 
         # Save individual previews
-        save_preview_images(images, "section")
+        save_preview_images(images, section_names)
 
         # Combine images vertically
         final_img = combine_images_vertical(images)
