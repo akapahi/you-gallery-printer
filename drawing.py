@@ -84,7 +84,11 @@ def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spac
     for word_idx, word in enumerate(words):
         for char in word:
             char_img = Image.new("RGBA", (char_size, char_size), (255, 255, 255, 0))
-            ImageDraw.Draw(char_img).text((0, 0), char, font=font, fill=TEXT_COLOR)
+            char_draw = ImageDraw.Draw(char_img)
+            bbox = char_draw.textbbox((0, 0), char, font=font)
+            x = (char_size - (bbox[2] - bbox[0])) // 2 - bbox[0]
+            y = (char_size - (bbox[3] - bbox[1])) // 2 - bbox[1]
+            char_draw.text((x, y), char, font=font, fill=TEXT_COLOR)
             rotated = char_img.rotate(270, expand=True)
             img.paste(rotated, (title_x, current_y), rotated)
             current_y += rotated.height + char_spacing
