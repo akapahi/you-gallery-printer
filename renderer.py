@@ -116,18 +116,20 @@ def render_empty_section(img, draw, y, section):
     bbox = draw.textbbox((0, 0), "NO DATA FOUND", font=no_data_font)
     text_height = (bbox[3] - bbox[1]) + 20
 
-    # Section height is based on longest of title or content
     content_height = zizia_height + text_height
     section_height = max(title_height, content_height) + 40
-    total_content_height = zizia_height + text_height
-    top_padding = (section_height - total_content_height) // 2
+    top_padding = (section_height - content_height) // 2
 
-    y = y + top_padding
+    start_y = y
 
-    title_end_y = draw_vertical_title(
-        img, section["title"], y, font, title_x,
+    # Title always starts at top of section
+    draw_vertical_title(
+        img, section["title"], start_y, font, title_x,
         char_size=char_size, char_spacing=char_spacing, space_advance=space_advance,
     )
+
+    # Content is centered vertically within section
+    y = start_y + top_padding
 
     try:
         zizia = Image.open("zizia.png").convert("RGB")
@@ -143,9 +145,9 @@ def render_empty_section(img, draw, y, section):
     bbox = draw.textbbox((0, 0), "NO DATA FOUND", font=no_data_font)
     text_width = bbox[2] - bbox[0]
     text_x = (PRINTER_WIDTH - text_width) // 2
-    y = draw_text(draw, "NO DATA FOUND", y, no_data_font, x_override=text_x)
+    draw_text(draw, "NO DATA FOUND", y, no_data_font, x_override=text_x)
 
-    return y + 40
+    return start_y + section_height
 
 
 def render_header_section(data):
