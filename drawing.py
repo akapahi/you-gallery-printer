@@ -107,3 +107,13 @@ def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spac
             current_y += word_gap
 
     return current_y
+
+
+def draw_horizontal_line(draw, y, width=PRINTER_WIDTH, thickness=1):
+    """Draw a horizontal line across the full width at position y."""
+    draw.line([(0, y), (width, y)], fill=TEXT_COLOR, width=thickness)
+
+
+def draw_vertical_line(draw, x, start_y, end_y, thickness=1):
+    """Draw a vertical line from start_y to end_y at position x."""
+    draw.line([(x, start_y), (x, end_y)], fill=TEXT_COLOR, width=thickness)
