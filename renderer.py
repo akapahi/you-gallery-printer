@@ -1,5 +1,6 @@
 import base64
 import logging
+from datetime import date
 from io import BytesIO
 from pathlib import Path
 
@@ -56,16 +57,21 @@ def _render_data(obj, img, draw, y, content_x, content_width, prefix=""):
     return y
 
 
+TITLE_CHAR_SIZE        = 60
+TITLE_CHAR_SIZE_EMPTY  = 70
+TITLE_RIGHT_MARGIN     = 5  # pixels between right edge of char box and canvas edge
+
 def render_section(img, draw, y, section, section_data):
     """Render a filled section with a rotated title on the right edge."""
     font      = ImageFont.truetype(FONT_PATH, 28)
-    title_x   = PRINTER_WIDTH - 55
+    char_size = TITLE_CHAR_SIZE
+    title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     content_x = 30
     content_width = PRINTER_WIDTH - content_x - 80  # leave room for right-side title
 
     title_end_y = draw_vertical_title(
         img, section["title"], y, font, title_x,
-        char_size=60, char_spacing=2, space_advance=6,
+        char_size=char_size, char_spacing=2, space_advance=6,
     )
 
     y = _render_data(
@@ -94,9 +100,8 @@ def calculate_vertical_title_height(title, char_size, char_spacing, space_advanc
 def render_empty_section(img, draw, y, section):
     """Render a placeholder section (no data) with zizia image, centered."""
     font      = ImageFont.truetype(FONT_PATH, 28)
-    title_x   = PRINTER_WIDTH - 90
-    content_x = 30
-    char_size = 70
+    char_size = TITLE_CHAR_SIZE_EMPTY
+    title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     char_spacing = -2
     space_advance = 15
 
@@ -264,3 +269,22 @@ def print_visitor_ticket(printer_device, data):
 
     except Exception as e:
         logger.error(f"Printing failed: {e}")
+
+
+def generate_test_print(printer_device=None):
+    """Generate a test print with zizia.png as the photo in every section."""
+    with open("zizia.png", "rb") as f:
+        photo_b64 = base64.b64encode(f.read()).decode()
+
+    data = {
+        "UID": "TEST-001",
+        "appData": {
+            "nebula":  {"photo": photo_b64},
+            "ar":      {"photo": photo_b64},
+            "palm":    {"photo": photo_b64, "palmLength": 10, "palmWidth": 10},
+            "rename":  {"photo": photo_b64, "name": "test"},
+            "planar":  {"photo": photo_b64, "DOB": str(date.today())},
+        },
+    }
+
+    print_visitor_ticket(printer_device, data)
