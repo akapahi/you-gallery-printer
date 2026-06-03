@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import signal
 
 import requests
 import websockets
@@ -8,7 +9,7 @@ import websockets
 from card import deactivate_card, reactivate_after_delay
 from config import RECONNECT_DELAY, REQUEST_TIMEOUT, STATION_ID, VISITOR_API, WS_URL, DEBUG
 from health import send_health_ping
-from renderer import is_empty, print_visitor_ticket
+from renderer import generate_test_print, is_empty, print_visitor_ticket
 
 logging.basicConfig(
     level=logging.INFO,
@@ -98,4 +99,10 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error(f"Printer init failed: {e}")
 
-    asyncio.run(websocket_loop())
+    def _on_test_print():
+        logger.info("SIGUSR1 received — running test print")
+        generate_test_print(_printer)
+
+    loop = asyncio.new_event_loop()
+    loop.add_signal_handler(signal.SIGUSR1, _on_test_print)
+    loop.run_until_complete(websocket_loop())
