@@ -69,11 +69,9 @@ def render_section(img, draw, y, section, section_data):
     title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     content_x = 30
     content_width = PRINTER_WIDTH - content_x - 80  # leave room for right-side title
-    
-    section_start_y = y
 
     title_end_y = draw_vertical_title(
-        img, section["title"], y, font, title_x,
+        img, section["title"], 0, font, title_x,
         char_size=char_size, char_spacing=2, space_advance=6,
     )
 
@@ -86,7 +84,7 @@ def render_section(img, draw, y, section, section_data):
     
     # Draw vertical line separating right-side title from left content
     vertical_line_x = title_x - 10
-    draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
+    draw_vertical_line(draw, vertical_line_x, 0, final_y)
 
     # Draw horizontal line at bottom of section, stopping at the vertical divider
     draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
@@ -116,8 +114,6 @@ def render_empty_section(img, draw, y, section):
     title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     char_spacing = -2
     space_advance = 15
-    
-    section_start_y = y
 
     # Calculate vertical title height
     title_height = calculate_vertical_title_height(section["title"], char_size, char_spacing, space_advance)
@@ -144,7 +140,7 @@ def render_empty_section(img, draw, y, section):
 
     # Title always starts at top of section
     draw_vertical_title(
-        img, section["title"], start_y, font, title_x,
+        img, section["title"], 0, font, title_x,
         char_size=char_size, char_spacing=char_spacing, space_advance=space_advance,
     )
 
@@ -171,7 +167,7 @@ def render_empty_section(img, draw, y, section):
     
     # Draw vertical line separating right-side title from left content
     vertical_line_x = title_x - 10
-    draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
+    draw_vertical_line(draw, vertical_line_x, 0, final_y)
 
     # Draw horizontal line at bottom of section, stopping at the vertical divider
     draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
