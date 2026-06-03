@@ -60,7 +60,8 @@ def _render_data(obj, img, draw, y, content_x, content_width, prefix=""):
 
 TITLE_CHAR_SIZE        = 60
 TITLE_CHAR_SIZE_EMPTY  = 70
-TITLE_RIGHT_MARGIN     = 5  # pixels between right edge of char box and canvas edge
+TITLE_RIGHT_MARGIN     = 5   # pixels between right edge of char box and canvas edge
+TITLE_DIVIDER_X        = PRINTER_WIDTH - TITLE_CHAR_SIZE_EMPTY - TITLE_RIGHT_MARGIN - 10
 
 def render_section(img, draw, y, section, section_data):
     """Render a filled section with a rotated title on the right edge."""
@@ -83,11 +84,10 @@ def render_section(img, draw, y, section, section_data):
     final_y = max(y, title_end_y) + 40
     
     # Draw vertical line separating right-side title from left content
-    vertical_line_x = title_x - 10
-    draw_vertical_line(draw, vertical_line_x, 0, final_y)
+    draw_vertical_line(draw, TITLE_DIVIDER_X, 0, final_y)
 
     # Draw horizontal line at bottom of section, stopping at the vertical divider
-    draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
+    draw_horizontal_line(draw, final_y - 40, width=TITLE_DIVIDER_X)
 
     return final_y
 
@@ -166,11 +166,10 @@ def render_empty_section(img, draw, y, section):
     final_y = start_y + section_height
     
     # Draw vertical line separating right-side title from left content
-    vertical_line_x = title_x - 10
-    draw_vertical_line(draw, vertical_line_x, 0, final_y)
+    draw_vertical_line(draw, TITLE_DIVIDER_X, 0, final_y)
 
     # Draw horizontal line at bottom of section, stopping at the vertical divider
-    draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
+    draw_horizontal_line(draw, final_y - 40, width=TITLE_DIVIDER_X)
 
     return final_y
 
