@@ -10,6 +10,7 @@ from config import APP_SECTIONS, FONT_PATH, ORDER, PRINTER_WIDTH, TEXT_COLOR, BA
 from drawing import (
     BODY_FONT, create_canvas, draw_subheading, draw_text,
     draw_vertical_title, draw_wrapped_text, get_text_width,
+    draw_horizontal_line, draw_vertical_line,
 )
 
 logger = logging.getLogger("printer-client")
@@ -68,6 +69,8 @@ def render_section(img, draw, y, section, section_data):
     title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     content_x = 30
     content_width = PRINTER_WIDTH - content_x - 80  # leave room for right-side title
+    
+    section_start_y = y
 
     title_end_y = draw_vertical_title(
         img, section["title"], y, font, title_x,
@@ -78,8 +81,17 @@ def render_section(img, draw, y, section, section_data):
         section_data, img, draw, y, content_x, content_width,
         prefix=section["stationId"],
     )
+    
+    final_y = max(y, title_end_y) + 40
+    
+    # Draw vertical line separating right-side title from left content
+    vertical_line_x = title_x - 10
+    draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
+    
+    # Draw horizontal line at bottom of section
+    draw_horizontal_line(draw, final_y - 40)
 
-    return max(y, title_end_y) + 40
+    return final_y
 
 
 def calculate_vertical_title_height(title, char_size, char_spacing, space_advance):
@@ -104,6 +116,8 @@ def render_empty_section(img, draw, y, section):
     title_x   = PRINTER_WIDTH - char_size - TITLE_RIGHT_MARGIN
     char_spacing = -2
     space_advance = 15
+    
+    section_start_y = y
 
     # Calculate vertical title height
     title_height = calculate_vertical_title_height(section["title"], char_size, char_spacing, space_advance)
@@ -153,7 +167,16 @@ def render_empty_section(img, draw, y, section):
     text_x = (PRINTER_WIDTH - text_width) // 2
     draw_text(draw, "NO DATA FOUND", y, no_data_font, x_override=text_x)
 
-    return start_y + section_height
+    final_y = start_y + section_height
+    
+    # Draw vertical line separating right-side title from left content
+    vertical_line_x = title_x - 10
+    draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
+    
+    # Draw horizontal line at bottom of section
+    draw_horizontal_line(draw, final_y - 40)
+
+    return final_y
 
 
 def render_header_section(data):
@@ -174,6 +197,10 @@ def render_header_section(data):
     y += 20
     y = draw_subheading(draw, f"UID: {data.get('UID', 'UNKNOWN')}", y, center=True)
     y += 30
+    
+    # Draw horizontal line after header
+    draw_horizontal_line(draw, y)
+    y += 10
 
     img = img.crop((0, 0, PRINTER_WIDTH, y))
     return img
