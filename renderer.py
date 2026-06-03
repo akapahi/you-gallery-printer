@@ -87,9 +87,9 @@ def render_section(img, draw, y, section, section_data):
     # Draw vertical line separating right-side title from left content
     vertical_line_x = title_x - 10
     draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
-    
-    # Draw horizontal line at bottom of section
-    draw_horizontal_line(draw, final_y - 40)
+
+    # Draw horizontal line at bottom of section, stopping at the vertical divider
+    draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
 
     return final_y
 
@@ -172,9 +172,9 @@ def render_empty_section(img, draw, y, section):
     # Draw vertical line separating right-side title from left content
     vertical_line_x = title_x - 10
     draw_vertical_line(draw, vertical_line_x, section_start_y, final_y)
-    
-    # Draw horizontal line at bottom of section
-    draw_horizontal_line(draw, final_y - 40)
+
+    # Draw horizontal line at bottom of section, stopping at the vertical divider
+    draw_horizontal_line(draw, final_y - 40, width=vertical_line_x)
 
     return final_y
 
