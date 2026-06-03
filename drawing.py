@@ -109,7 +109,7 @@ def draw_vertical_title(img, title, start_y, font, title_x, char_size, char_spac
     return current_y
 
 
-def draw_horizontal_line(draw, y, width=PRINTER_WIDTH, thickness=1):
+def draw_horizontal_line(draw, y, width=PRINTER_WIDTH, thickness=3):
     """Draw a horizontal line across the full width at position y."""
     draw.line([(0, y), (width, y)], fill=TEXT_COLOR, width=thickness)
 
