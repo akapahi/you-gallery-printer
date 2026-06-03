@@ -15,7 +15,7 @@ DEVICE_TYPE = "pi"
 STATION_ID  = "printer"
 
 # Debug
-DEBUG = False
+DEBUG = True
 
 # Printer canvas
 PRINTER_WIDTH    = 576
